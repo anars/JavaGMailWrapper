@@ -1,5 +1,6 @@
 package com.anars.jgmw;
 
+
 public class MailException
   extends Exception
 {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Mail
+public class Message
 {
   private Header[] _headers;
   private Address _from;
@@ -110,17 +110,17 @@ public class Mail
 
   public boolean addEmbeddedMedia(Attachment attachment)
   {
-    return (_attachments.add(attachment));
+    return (_embeddedMedia.add(attachment));
   }
 
   public Attachment removeEmbeddedMedia(int index)
   {
-    return (_attachments.remove(index));
+    return (_embeddedMedia.remove(index));
   }
 
   public void removeAllEmbeddedMedia()
   {
-    _attachments.clear();
+    _embeddedMedia.clear();
   }
 
   public void setFrom(Address from)
@@ -173,7 +173,7 @@ public class Mail
     return (_htmlBody);
   }
 
-  public Mail()
+  public Message()
   {
     super();
   }
