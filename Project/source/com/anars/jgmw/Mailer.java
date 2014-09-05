@@ -6,13 +6,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 public class Mailer
 {
@@ -103,9 +108,60 @@ public class Mailer
       for (int index = 0; index < recipients.size(); index++)
         addresses[index] = new InternetAddress(recipients.get(index).getAddress(), recipients.get(index).getName());
       message.setRecipients(javax.mail.Message.RecipientType.BCC, addresses);
-      message.setSubject(mail.getSubject());
-      message.setText(mail.getTextBody());
-      Transport.send(message);
+      message.setSubject(mail.getSubject() != null? mail.getSubject(): "");
+
+      Multipart multipart = null;
+      if (mail.getHtmlBody() != null)
+      {
+        multipart = new MimeMultipart();
+        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+        mimeBodyPart.setText(mail.getTextBody() != null? mail.getTextBody(): "");
+        mimeBodyPart.setContent(mail.getHtmlBody(), "text/html");
+        multipart.addBodyPart(mimeBodyPart);
+      }
+
+      List<Attachment> attachments = mail.getAttachments();
+      List<Attachment> inlinemedia = mail.getEmbeddedMedia();
+      if (attachments.size() != 0 || inlinemedia.size() != 0)
+      {
+        if (multipart == null)
+          multipart = new MimeMultipart();
+
+        for (Attachment attachment: attachments)
+        {
+          MimeBodyPart mimeBodyPart = new MimeBodyPart();
+          mimeBodyPart.setDataHandler(new DataHandler(attachment.getDataSource()));
+          mimeBodyPart.setFileName(attachment.getName());
+          mimeBodyPart.setDisposition(MimeBodyPart.ATTACHMENT);
+          multipart.addBodyPart(mimeBodyPart);
+        }
+
+        for (Attachment attachment: inlinemedia)
+        {
+          MimeBodyPart mimeBodyPart = new MimeBodyPart();
+          mimeBodyPart.setDataHandler(new DataHandler(attachment.getDataSource()));
+          mimeBodyPart.setFileName(attachment.getName());
+          mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
+          multipart.addBodyPart(mimeBodyPart);
+        }
+
+      }
+
+      if (multipart != null)
+      {
+        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+        mimeBodyPart.setText(mail.getTextBody() != null? mail.getTextBody(): "");
+        multipart.addBodyPart(mimeBodyPart);
+        message.setContent(multipart);
+      }
+      else
+      {
+        message.setText(mail.getTextBody() != null? mail.getTextBody(): "");
+      }
+
+      Transport transport = session.getTransport();
+      transport.send(message);
+      transport.close();
     }
     catch (UnsupportedEncodingException uee)
     {

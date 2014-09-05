@@ -108,6 +108,11 @@ public class Message
     _attachments.clear();
   }
 
+  public List<Attachment> getAttachments()
+  {
+    return (Collections.unmodifiableList(_attachments));
+  }
+
   public boolean addEmbeddedMedia(Attachment attachment)
   {
     return (_embeddedMedia.add(attachment));
@@ -122,6 +127,12 @@ public class Message
   {
     _embeddedMedia.clear();
   }
+  
+  public List<Attachment> getEmbeddedMedia()
+  {
+    return (Collections.unmodifiableList(_embeddedMedia));
+  }
+
 
   public void setFrom(Address from)
   {
