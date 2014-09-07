@@ -115,8 +115,7 @@ public class Mailer
       {
         multipart = new MimeMultipart();
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setText(mail.getTextBody() != null? mail.getTextBody(): "");
-        mimeBodyPart.setContent(mail.getHtmlBody(), "text/html");
+        mimeBodyPart.setContent(mail.getHtmlBody(), "text/html; charset=UTF-8");
         multipart.addBodyPart(mimeBodyPart);
       }
 
@@ -150,7 +149,7 @@ public class Mailer
       if (multipart != null)
       {
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setText(mail.getTextBody() != null? mail.getTextBody(): "");
+        mimeBodyPart.setContent(mail.getTextBody() != null? mail.getTextBody(): "", "text/plain; charset=UTF-8");
         multipart.addBodyPart(mimeBodyPart);
         message.setContent(multipart);
       }
