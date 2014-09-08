@@ -157,10 +157,7 @@ public class Mailer
       {
         message.setText(mail.getTextBody() != null? mail.getTextBody(): "");
       }
-
-      Transport transport = session.getTransport();
-      transport.send(message);
-      transport.close();
+      Transport.send(message);
     }
     catch (UnsupportedEncodingException uee)
     {
